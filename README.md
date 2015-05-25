@@ -8,6 +8,7 @@ The project uses two data sources. One is the list of 36.000 cities in France, t
 ### List of cities
 This list is handled by insee.py. The datafile is Codes-INSEE-communes-geolocalisees.csv The file can be accessed on
 the opendata website:
+
 https://www.data.gouv.fr/fr/datasets/geofla-communes/
 
 The file contains the following information for 36.000 cities:
@@ -34,8 +35,11 @@ Access to weather data is done with meteo.py. The datafiles are :
     - amount rained in the last three hours (mm)
 
 This data can be found here:
+
 https://www.data.gouv.fr/fr/datasets/donnees-d-observation-des-principales-stations-meteorologiques/
+
 https://donneespubliques.meteofrance.fr/?fond=produit&id_produit=90&id_rubrique=32
+
 At the moment, the data folder only contains the weather data from file 'synop.201301.csv'. Other data files can be
 downloaded on the previous website and added to the data folder.
 
@@ -47,14 +51,18 @@ Their is no pip installation at the moment. The project is at an early stage. He
   Territoire/data folder.
 
 Then you are ready to use the API. Here are a few basic calls.
-from Territoire import insee
-from Territoire import meteo
+
+    from Territoire import insee
+    from Territoire import meteo
 
 ### Getting city information
 
-insee.get_city_data('75056')
-the only parameter for this function is the insee code of the city
+    insee.get_city_data('75056')
+    
+the only parameter for this function is the insee code of the city.
 returns:
+
+```python
 {
    "location": [
       48.86080170979514,
@@ -67,13 +75,14 @@ returns:
    "pop99": 2125246,
    "code_postal": "75000"
 }
+```
 
 ### Getting weather data
 You can request weather for a city using the insee code of that city. The file meteo.py will find the position of
 the city you are looking for (through insee.py) and find the closest weather station among its list of 60 stations.
 The weather you receive is the one of the weather station, not the one of the city you are querying.
 
-weather_data, city_infos, weather_station = meteo.get_climate_data("75056", dates=["20130101", "20130102"])
+    weather_data, city_infos, weather_station = meteo.get_climate_data("75056", dates=["20130101", "20130102"])
 
 Parameters:
  - first positional parameters is the insee code
@@ -94,15 +103,17 @@ Returns:
 
 weather_data: a dictionary contaiing several list. One of them is a list of datetimes and the others are measurements
 for these times.
+```python
 {
    "humidity_percent": "array([ 90.,  92.])",
    "datetime": "array(['2013-01-01T01:00:00.000000000+0100',\n       '2013-01-02T01:00:00.000000000+0100'], dtype='datetime64[ns]')",
    "rain_3h_mm": "array([ 2.,  0.])",
    "temperature_degreeC": "array([ 7.6       ,  2.39998779])"
 }
-
+```
 city_infos: infos from insee.py about the city you are querying. It also provides you with the distance from the
 queried city and the closest meteo station found in the list
+```python
 {
    "location": [
       48.86080170979514,
@@ -116,8 +127,10 @@ queried city and the closest meteo station found in the list
    "pop99": 2125246,
    "code_postal": "75000"
 }
+```
 
 weather_station. Informations about the closest weather station found
+```python
 {
    "location": [
       48.716833,
@@ -127,6 +140,7 @@ weather_station. Informations about the closest weather station found
    "Altitude": 89.0,
    "Nom": "ORLY"
 }
+```
 
 ## Dependencies
 The project was done with Python 3.4
