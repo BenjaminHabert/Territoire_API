@@ -92,12 +92,13 @@ Parameters:
        - date_start = date
        - date_end = date
        - freq = 'D'
-   In each of these situations, date can be either a datetime object or or string that can be converted to a date.
-   Examples of strings:
-      '20130101'   -1rst of january
-      '2013010112' -at none
-      '2013-01-01 12:30'
-   See the documentation of pandas.date_range() for more information
+ 
+In each of these situations, date can be either a datetime object or or string that can be converted to a date.
+Examples of strings:
+  '20130101'   -1rst of january
+  '2013010112' -at none
+  '2013-01-01 12:30'
+See the documentation of pandas.date_range() for more information
 
 Returns:
 
