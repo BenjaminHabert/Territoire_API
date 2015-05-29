@@ -17,7 +17,8 @@ def _load_data():
     path_here = os.path.dirname(__file__)
     path_to_data = os.path.join(path_here, dirname, filename)
     print('[insee.py] Loading list of insee codes from {:s}'.format(filename))
-    with open(path_to_data, encoding='latin1') as f:
+    # with open(path_to_data, encoding='latin1') as f:  # THIS DOES NOT WORK WITH PYTHON 2.7
+    with open(path_to_data) as f:
         reader = csv.DictReader(f, delimiter=',')
         for row in reader:
             _clean_csv_dict(row)
@@ -38,7 +39,7 @@ def _clean_csv_dict(d):
     :return: nothing
     """
     try:
-        d["Nom"] = d["Nom"]#.decode('latin1')
+        d["Nom"] = d["Nom"].decode('latin1')
         d['Insee'] = format_insee_code(d['Insee'])
         d['pop99'] = int(d['pop99'])
 
