@@ -9,7 +9,9 @@ The project uses two data sources. One is the list of 36.000 cities in France, t
 This list is handled by insee.py. The datafile is Codes-INSEE-communes-geolocalisees.csv The file can be accessed on
 the opendata website:
 
-https://www.data.gouv.fr/fr/datasets/geofla-communes/
+https://www.data.gouv.fr/fr/datasets/codes-insee-communes-geolocalisees-nd/
+
+Additional resource: https://www.data.gouv.fr/fr/datasets/geofla-communes/
 
 The file contains the following information for 36.000 cities:
 - insee code
