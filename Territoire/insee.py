@@ -13,7 +13,8 @@ def _load_data():
     :return: nothing
     """
     dirname = 'data'
-    filename = 'Codes-INSEE-communes-geolocalisees.csv'
+    # filename = 'Codes-INSEE-communes-geolocalisees.csv'
+    filename = "INSEE_communes.csv"
     path_here = os.path.dirname(__file__)
     path_to_data = os.path.join(path_here, dirname, filename)
     print('[insee.py] Loading list of insee codes from {:s}'.format(filename))
@@ -25,8 +26,9 @@ def _load_data():
             insee_data[row['Insee']] = row
 
     #select top cities from this
-    populations = [(v['Insee'], v['pop99']) for v in insee_data.values()]
+    populations = [(v['Insee'], v['pop2012']) for v in insee_data.values()]
     populations.sort(reverse=True, key=lambda x: x[1])
+    insee_data_top = {}
     for insee_code, pop in populations[0:200]:
         insee_data_top[insee_code] = insee_data[insee_code]
 
@@ -39,9 +41,10 @@ def _clean_csv_dict(d):
     :return: nothing
     """
     try:
-        d["Nom"] = d["Nom"].decode('latin1')
+        #d["Nom"] = d["Nom"].decode('latin1')
         d['Insee'] = format_insee_code(d['Insee'])
         d['pop99'] = int(d['pop99'])
+        d['pop2012'] = int(d['pop2012'])
 
 
         d['location'] = [float(d['latitude_radian'])*180/pi, float(d['longitude_radian'])*180/pi]
