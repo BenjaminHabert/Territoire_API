@@ -36,7 +36,7 @@ def _load_data():
     files = [f for f in os.listdir(path_to_data) if os.path.isfile(os.path.join(path_to_data,f))]
     data = None
     for f in files:
-        if f == cities_list_file or not f.endswith('.csv') or not f.startswith('synop'):
+        if f == cities_list_file or not (f.endswith('.csv') or  f.endswith('.csv.gz')) or not f.startswith('synop'):
             pass
         else:
             try:
@@ -121,7 +121,7 @@ def find_closest_station(location):
     return code,  stations[code], distances[0][1]
 
 
-def get_climate_data(insee_code, dates=None, date_start=None, date_end=None, freq='D'):
+def get_climate_data(insee_code, dates=None, date_start=None, date_end=None, freq='D', method='interp'):
     """
 
     :param insee_code: insee code of the city to lookup
@@ -165,10 +165,10 @@ def get_climate_data(insee_code, dates=None, date_start=None, date_end=None, fre
     }
     """
 
-    if not dates:
+    if  dates is None:
         dates = pd.date_range(start=date_start, end=date_end, freq=freq)
     else:
-        if isinstance(dates, list):
+        if len(dates) > 0:
             dates = pd.DatetimeIndex(dates)
         else :
             dates = pd.DatetimeIndex([dates])
@@ -182,18 +182,33 @@ def get_climate_data(insee_code, dates=None, date_start=None, date_end=None, fre
     subdata = subdata.set_index('datetime', inplace=False)
     subdata = subdata.loc[:, columns_to_interpolate]
 
-    interpolated = pd.concat([subdata, dates]).sort_index().interpolate(method='time')
 
-    result = interpolated.loc[dates.index]
-    result = result.drop_duplicates() #for some reason, using inplace=True creates a warning (SettingWithCopyWarning)
+    if method=='interp':
+        interpolated = pd.concat([subdata, dates]).sort_index().interpolate(method='time')
+        result = interpolated.loc[dates.index]
+        result['index'] = result.index
+
+        result = result.drop_duplicates(subset=['index'], inplace=False) #for some reason, using inplace=True creates a warning (SettingWithCopyWarning)
+
+
+    else :
+        # average per day
+        subdata = subdata.groupby(pd.TimeGrouper('D')).transform(np.mean).resample('D') #, how='ohlc')
+        interpolated = pd.concat([subdata, dates]).sort_index().interpolate(method='time')
+        result = interpolated.loc[dates.index]
+        result['index'] = result.index
+
+        result = result.drop_duplicates(subset=['index'], inplace=False) #for some reason, using inplace=True creates a warning (SettingWithCopyWarning)
 
     d={}
     d['meteo_data'] = {
-        'datetime': result.index.values,
-        'temperature_degreeC': result['t'].values,
-        'humidity_percent': result['u'].values,
-        'rain_3h_mm': result['rr3'].values
-    }
+            'datetime': result.index.values,
+            'temperature_degreeC': result['t'].values,
+            'humidity_percent': result['u'].values,
+            'rain_3h_mm': result['rr3'].values
+        }
+
+
     city_info['distance_to_station_km'] = distance_km
     d['city_info'] = city_info
 
